@@ -4,7 +4,9 @@ const outputEl = document.getElementById('output');
 const outputList = document.getElementById('outputList');
 const notesToggle = document.getElementById('notesToggle');
 const tooltip = document.getElementById('wordTooltip');
-const apiUrl = 'https://phonetic-transcriber-production.up.railway.app/transcription/formatted/';
+const API_BASE_URL = window.location.hostname === "127.0.0.1"
+      ? "http://127.0.0.1:8000"
+      :  `${window.location.origin}/phonetic-transcriber/proxy`;
 
 let showNotes = false;
 let lastResponseData = null;
@@ -324,10 +326,10 @@ form.addEventListener('submit', async (event) => {
   outputList.innerHTML = '';
 
   try {
-    const response = await fetch(apiUrl, {
+    const response = await fetch(`${API_BASE_URL}/transcription/formatted/`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({ text }),
     });
