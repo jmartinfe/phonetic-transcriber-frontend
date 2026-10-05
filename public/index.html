@@ -3,10 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Transcribe palabras y frases al alfabeto fonético internacional (IPA) de manera rápida y precisa.">
+<meta name="description" content="Transcribe palabras y frases del inglés a una aproximación de como sonaría leído en español y una trasncripción al Alfabeto Fonético Internacional (IPA) con una explicación de cómo leerlo.">
 <meta name="robots" content="index, follow">
 <meta name="theme-color" content="#f8fafd">
-<title>Transcriptor Fonético</title>
+<link rel="canonical" href="https://pronunciareningles.com/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_ES">
+<meta property="og:url" content="https://pronunciareningles.com/">
+<meta property="og:title" content="Transcriptor fonético online | IPA">
+<meta property="og:description" content="Transcribe palabras y frases del inglés a una aproximación de como sonaría leído en español y una trasncripción al Alfabeto Fonético Internacional (IPA) con una explicación de cómo leerlo.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Transcriptor fonético online | IPA">
+<meta name="twitter:description" content="Transcribe palabras y frases del inglés a una aproximación de como sonaría leído en español y una trasncripción al Alfabeto Fonético Internacional (IPA) con una explicación de cómo leerlo.">
+<title>Transcriptor fonético online | IPA</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&family=Noto+Sans:wght@400;500&display=swap" rel="stylesheet">
@@ -51,6 +60,13 @@ body {
 /* Contenedor principal */
 main { max-width: 1040px; margin: 0 auto; padding: 8px 16px 48px; }
 .lead { margin: 8px 8px 20px; color: var(--muted); }
+.search-content { max-width: 760px; margin: 48px 8px 0; }
+.search-content h2 { margin: 0 0 20px; font-size: 1.35rem; font-weight: 600; }
+.search-content h3 { margin: 0 0 8px; font-size: 1.05rem; font-weight: 600; }
+.search-content article + article { margin-top: 24px; }
+.search-content details { padding: 14px 0; border-top: 1px solid var(--line); }
+.search-content summary { cursor: pointer; font-weight: 500; }
+.search-content details p { margin: 10px 0 0; color: var(--muted); }
 
 /* Tarjeta de dos paneles */
 .card {
@@ -186,6 +202,32 @@ main { max-width: 1040px; margin: 0 auto; padding: 8px 16px 48px; }
     <button class="notes-toggle" id="notesToggle" type="button">Mostrar notas</button>
   </div>
   <div class="tooltip" id="wordTooltip" aria-hidden="true"></div>
+
+  <section class="search-content" aria-labelledby="guide-heading">
+    <h2 id="guide-heading">Guía de transcripción fonética</h2>
+    <article>
+      <p>Este transcriptor convierte palabras y frases del inglés a una aproximación de cómo sonaría leído en español y una transcripción al Alfabeto Fonético Internacional (IPA). A continuación encontrarás información útil para entender y usar el transcriptor.</p>
+    </article>
+
+    <article>
+      <h3>Qué es el Alfabeto Fonético Internacional (IPA)</h3>
+      <p>El Alfabeto Fonético Internacional (IPA, o AFI en sus siglas en español) es un sistema de notación fonética que representa los sonidos del habla de manera precisa y consistente. Cada símbolo del IPA corresponde a un sonido específico, lo que permite transcribir la pronunciación de palabras en cualquier idioma de forma clara y comprensible.</p>
+    </article>
+    <article>
+      <h3>Transcripción aproximada</h3>
+      <p>Esta transcripción es una aproximación de cómo sonaría cada palabra en inglés si se leyera con la pronunciación española. Ten en cuenta que esta aproximación puede no reflejar con exactitud la pronunciación real del inglés, pero sirve como guía para quienes no están familiarizados con los sonidos del idioma.</p>
+      <p>Dispones también de anotaciones para aclarar algunos sonidos que no existen en español o que pueden ser confusos.</p>
+    </article>
+    <article>
+      <h3>Cómo usar el transcriptor</h3>
+      <p>Puedes introducir cualquier texto en inglés, ya sea una palabra o una frase completa, y el transcriptor generará su pronunciación aproximada en español junto con la transcripción en IPA. Asegúrate de escribir correctamente las palabras para obtener resultados precisos.</p>
+    </article>
+    <article>
+      <h3>Cómo interpretar una transcripción</h3>
+      <p>Puedes leer tal cual la transcripción aproximada, y complementar con las anotaciones. Para interpretar la transcripción en IPA, puedes consultar la guía de símbolos del Alfabeto Fonético Internacional, que te ayudará a entender cómo pronunciar cada sonido representado por los símbolos.</p>
+      <p>Esto te dará una idea de cómo pronunciar, pero se recomienda usar teniendo ya una base de conocimiento del idioma inglés, ya que la transcripción no sustituye la práctica de escuchar y repetir los sonidos correctos.</p>
+    </article>
+  </section>
 </main>
 
 <script src="js/app.js"></script>
