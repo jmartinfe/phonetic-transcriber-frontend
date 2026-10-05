@@ -1,33 +1,218 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Transcribe palabras y frases al alfabeto fonético internacional (IPA) de manera rápida y precisa.">
-  <meta name="robots" content="index, follow">
-  <meta name="theme-color" content="#eef3f8">
-  <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
-  <link rel="apple-touch-icon" sizes="194x194" href="img/favicon-194x194.png">
-  <link rel="shortcut icon" href="img/favicon.ico">
-  <title>Transcriptor Fonético</title>
-  <link rel="stylesheet" href="css/styles.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Transcribe palabras y frases al alfabeto fonético internacional (IPA) de manera rápida y precisa.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#f8fafd">
+<title>Transcriptor Fonético</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&family=Noto+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f8fafd;
+  --surface: #ffffff;
+  --surface-2: #f0f4f9;
+  --line: #dde3ea;
+  --text: #1f1f1f;
+  --muted: #5f6368;
+  --accent: #0b57d0;
+  --accent-soft: #d3e3fd;
+  --accent-ink: #041e49;
+  --ui: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ipa: "Noto Sans", "Charis SIL", "Doulos SIL", "Segoe UI", sans-serif;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #131314; --surface: #1e1f20; --surface-2: #282a2c; --line: #3c4043;
+    --text: #e3e3e3; --muted: #9aa0a6; --accent: #a8c7fa; --accent-soft: #0842a0; --accent-ink: #d3e3fd;
+  }
+}
+*, *::before, *::after { box-sizing: inherit; }
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+body {
+  margin: 0; min-height: 100vh; background: var(--bg); color: var(--text);
+  font-family: var(--ui); font-size: 16px; line-height: 1.5;
+}
+
+/* Cabecera */
+.top { display: flex; align-items: center; gap: 12px; padding: 16px 24px; }
+.logo {
+  width: 36px; height: 36px; border-radius: 10px; background: var(--accent-soft); color: var(--accent-ink);
+  display: grid; place-items: center; font-family: var(--ipa); font-size: 20px; font-weight: 500;
+}
+.top h1 { margin: 0; font-size: 1.25rem; font-weight: 500; letter-spacing: -.01em; }
+
+/* Contenedor principal */
+main { max-width: 1040px; margin: 0 auto; padding: 8px 16px 48px; }
+.lead { margin: 8px 8px 20px; color: var(--muted); }
+
+/* Tarjeta de dos paneles */
+.card {
+  display: grid; grid-template-columns: 1fr 1fr; background: var(--surface);
+  border: 1px solid var(--line); border-radius: 24px; overflow: hidden;
+  box-shadow: 0 1px 2px rgba(60,64,67,.15), 0 2px 6px 2px rgba(60,64,67,.08);
+}
+.panel { display: flex; flex-direction: column; min-height: 280px; }
+.panel + .panel { background: var(--surface-2); border-left: 1px solid var(--line); }
+.panel-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 12px 0 20px; min-height: 52px;
+}
+.chip {
+  font-size: .875rem; font-weight: 500; color: var(--accent);
+  padding: 6px 4px 8px; border-bottom: 3px solid var(--accent);
+}
+.panel textarea, .out {
+  flex: 1; width: 100%; border: 0; background: transparent; color: var(--text);
+  padding: 12px 20px; resize: none; outline: none;
+  font: 400 1.5rem/1.45 var(--ui);
+}
+.panel textarea::placeholder { color: var(--muted); }
+.out { font-family: var(--ipa); overflow-wrap: anywhere; white-space: pre-wrap; }
+.out.empty { color: var(--muted); font-family: var(--ui); }
+.out.sentence-hint { font: 400 .875rem/1.45 var(--ui); }
+#outputList { list-style: none; margin: 0; padding: 0 20px 16px; }
+.result-item { padding: 12px 0; border-top: 1px solid var(--line); }
+.result-token, .tooltip-title { font-weight: 600; }
+.result-value { font-family: var(--ipa); font-size: 1.125rem; overflow-wrap: anywhere; }
+.result-meta, .result-notes, .result-alternatives { color: var(--muted); font-size: .875rem; }
+.result-item ul { margin: 4px 0 0; padding-left: 20px; }
+.sentence-word { cursor: pointer; border-bottom: 1px dotted var(--accent); }
+.sentence-word.no-link { cursor: default; border-bottom: 0; }
+.sentence-word.not-found { color: #b3261e; }
+.notes-toggle { border: 1px solid var(--line); border-radius: 999px; padding: 8px 16px; background: var(--surface); color: var(--text); font: 500 .9375rem var(--ui); cursor: pointer; }
+.notes-toggle:hover { background: var(--surface-2); }
+.tooltip { position: absolute; z-index: 5; max-width: min(360px, calc(100vw - 24px)); padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--text); box-shadow: 0 4px 16px rgba(0,0,0,.18); visibility: hidden; }
+.tooltip.show { visibility: visible; }
+.tooltip .result-value { margin-top: 4px; }
+.tooltip .result-alternatives { margin-top: 8px; }
+.tooltip .result-alternatives ul { margin: 4px 0 0; padding-left: 20px; }
+
+.panel-foot { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px 14px 20px; min-height: 64px; }
+.count { color: var(--muted); font-size: .8125rem; font-variant-numeric: tabular-nums; }
+
+/* Botones */
+.btn {
+  font: 500 .9375rem var(--ui); border: 0; cursor: pointer; border-radius: 999px;
+  padding: 10px 24px; background: var(--accent); color: #fff;
+}
+@media (prefers-color-scheme: dark) { .btn { color: #062e6f; } }
+.btn:hover { filter: brightness(1.08); }
+.icon-btn {
+  width: 40px; height: 40px; border-radius: 50%; border: 0; background: transparent; color: var(--muted);
+  cursor: pointer; display: grid; place-items: center;
+}
+.icon-btn:hover { background: color-mix(in srgb, var(--muted) 14%, transparent); }
+.icon-btn svg { width: 22px; height: 22px; fill: currentColor; }
+.btn:focus-visible, .icon-btn:focus-visible, .switch input:focus-visible + .track, textarea:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 2px;
+}
+.panel textarea:focus-visible { outline: none; }
+
+/* Interruptor de notas */
+.options { display: flex; align-items: center; gap: 12px; padding: 20px 8px 0; color: var(--muted); }
+.switch { position: relative; display: inline-flex; cursor: pointer; }
+.switch input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+.track { width: 40px; height: 24px; border-radius: 12px; background: var(--line); transition: background .15s; position: relative; }
+.track::after {
+  content: ""; position: absolute; top: 4px; left: 4px; width: 16px; height: 16px; border-radius: 50%;
+  background: var(--surface); box-shadow: 0 1px 2px rgba(0,0,0,.3); transition: transform .15s;
+}
+.switch input:checked + .track { background: var(--accent); }
+.switch input:checked + .track::after { transform: translateX(16px); }
+
+.notes {
+  margin: 16px 0 0; padding: 20px 24px; background: var(--surface); border: 1px solid var(--line);
+  border-radius: 16px; color: var(--muted);
+}
+.notes[hidden] { display: none; }
+
+/* Móvil: los paneles se apilan, como en Google Translate */
+@media (max-width: 720px) {
+  .card { grid-template-columns: 1fr; border-radius: 20px; }
+  .panel { min-height: 200px; }
+  .panel + .panel { border-left: 0; border-top: 1px solid var(--line); }
+  .panel textarea, .out { font-size: 1.25rem; }
+}
+@media (prefers-reduced-motion: reduce) { .track, .track::after { transition: none; } }
+</style>
 </head>
 <body>
-  <header class="page-header">
-    <h2>Transcriptor Fonético</h2>
-  </header>
+<header class="top">
+  <div class="logo" aria-hidden="true">ʃ</div>
+  <h1>Transcriptor Fonético</h1>
+</header>
+
+<main>
+  <p class="lead">Escribe una palabra o frase y obtén su transcripción fonética.</p>
+
   <form id="transcriberForm">
-    <label for="phrase">Introduce una palabra o frase (hasta 2000 caracteres):</label>
-    <textarea id="phrase" maxlength="2000" placeholder="Escribe el texto aquí..."></textarea>
-    <div id="controls" class="button-row">
-      <button type="submit">Transcribir</button>
-      <button type="button" id="notesToggle" class="toggle-button">Mostrar notas</button>
+  <section class="card">
+    <div class="panel">
+      <div class="panel-head">
+        <span class="chip">Texto</span>
+        <button class="icon-btn" id="clear" type="button" aria-label="Borrar texto" hidden>
+          <svg viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </div>
+      <textarea id="phrase" maxlength="2000" placeholder="Introduce una palabra o frase" aria-label="Texto a transcribir"></textarea>
+      <div class="panel-foot">
+        <span class="count"><span id="n">0</span> / 2000</span>
+        <button class="btn" id="go" type="submit">Transcribir</button>
+      </div>
     </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <span class="chip">Transcripción</span>
+        <button class="icon-btn" id="copy" type="button" aria-label="Copiar transcripción" hidden>
+          <svg viewBox="0 0 24 24"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2m0 16H8V7h11z"/></svg>
+        </button>
+      </div>
+      <div class="out empty" id="output" aria-live="polite">La transcripción aparecerá aquí.</div>
+      <ul id="outputList" aria-live="polite"></ul>
+      <div class="panel-foot"></div>
+    </div>
+  </section>
   </form>
-  <div id="output" aria-live="polite">La transcripción aparecerá aquí.</div>
-  <ul id="outputList" aria-live="polite"></ul>
-  <div id="wordTooltip" class="tooltip" aria-hidden="true"></div>
-  <script src="js/app.js"></script>
+
+  <div class="options">
+    <button class="notes-toggle" id="notesToggle" type="button">Mostrar notas</button>
+  </div>
+  <div class="tooltip" id="wordTooltip" aria-hidden="true"></div>
+</main>
+
+<script src="js/app.js"></script>
+<script>
+const input = document.getElementById("phrase");
+const output = document.getElementById("output");
+const clearButton = document.getElementById("clear");
+const copyButton = document.getElementById("copy");
+input.addEventListener("input", () => {
+  document.getElementById("n").textContent = input.value.length;
+  clearButton.hidden = !input.value;
+});
+clearButton.addEventListener("click", () => {
+  input.value = "";
+  input.dispatchEvent(new Event("input"));
+  output.textContent = "La transcripción aparecerá aquí.";
+  output.classList.add("empty");
+  outputList.innerHTML = "";
+  input.focus();
+});
+copyButton.addEventListener("click", () => {
+  navigator.clipboard.writeText([output.textContent, outputList.innerText].filter(Boolean).join("\n"));
+});
+new MutationObserver(() => {
+  output.classList.toggle("empty", output.textContent === "La transcripción aparecerá aquí.");
+  copyButton.hidden = !outputList.childElementCount;
+}).observe(outputList, { childList: true });
+</script>
 </body>
 </html>

@@ -4,9 +4,14 @@ const outputEl = document.getElementById('output');
 const outputList = document.getElementById('outputList');
 const notesToggle = document.getElementById('notesToggle');
 const tooltip = document.getElementById('wordTooltip');
-const API_BASE_URL = window.location.hostname === "127.0.0.1"
-      ? "http://127.0.0.1:8000"
-      :  `${window.location.origin}/phonetic-transcriber/proxy`;
+const API_BASE_URL = `${window.location.origin}/phonetic-transcriber/proxy`;
+
+phraseEl.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) {
+    event.preventDefault();
+    form.requestSubmit();
+  }
+});
 
 let showNotes = false;
 let lastResponseData = null;
@@ -151,6 +156,7 @@ function renderTokenSentence(data, text) {
   let tokenIndex = 0;
 
   outputEl.textContent = 'Haz clic en una palabra para ver los detalles.';
+  outputEl.classList.add('sentence-hint');
 
   const sentenceHtml = words
     .map((chunk) => {
@@ -202,6 +208,7 @@ function renderTokenSentence(data, text) {
 }
 
 function renderTranscriptionResult(data, text = '') {
+  outputEl.classList.remove('sentence-hint');
   const tokens = getTokens(data);
   if (!tokens.length) {
     outputEl.textContent = 'No token transcription data found. Raw response:';
@@ -263,6 +270,7 @@ function showTooltip(token, target) {
 }
 
 function hideTooltip() {
+  tooltip.style.visibility = 'hidden';
   tooltip.classList.remove('show');
   tooltip.setAttribute('aria-hidden', 'true');
   activeTooltipIndex = null;
