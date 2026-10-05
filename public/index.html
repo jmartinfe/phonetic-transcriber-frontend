@@ -92,7 +92,7 @@ main { max-width: 1040px; margin: 0 auto; padding: 8px 16px 48px; }
 .panel textarea::placeholder { color: var(--muted); }
 .out { font-family: var(--ipa); overflow-wrap: anywhere; white-space: pre-wrap; }
 .out.empty { color: var(--muted); font-family: var(--ui); }
-.out.sentence-hint { font: 400 .875rem/1.45 var(--ui); }
+.out.sentence-hint { flex: 0 0 auto; padding-block: 4px; font: 400 .875rem/1.45 var(--ui); }
 #outputList { list-style: none; margin: 0; padding: 0 20px 16px; }
 .result-item { padding: 12px 0; border-top: 1px solid var(--line); }
 .result-token, .tooltip-title { font-weight: 600; }
@@ -109,6 +109,9 @@ main { max-width: 1040px; margin: 0 auto; padding: 8px 16px 48px; }
 .tooltip .result-value { margin-top: 4px; }
 .tooltip .result-alternatives { margin-top: 8px; }
 .tooltip .result-alternatives ul { margin: 4px 0 0; padding-left: 20px; }
+@media (min-width: 721px) {
+  .output-panel > .out { flex: 0 0 auto; }
+}
 
 .panel-foot { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px 14px 20px; min-height: 64px; }
 .count { color: var(--muted); font-size: .8125rem; font-variant-numeric: tabular-nums; }
@@ -170,7 +173,7 @@ main { max-width: 1040px; margin: 0 auto; padding: 8px 16px 48px; }
 
   <form id="transcriberForm">
   <section class="card">
-    <div class="panel">
+    <div class="panel output-panel">
       <div class="panel-head">
         <span class="chip">Texto</span>
         <button class="icon-btn" id="clear" type="button" aria-label="Borrar texto" hidden>
@@ -249,7 +252,7 @@ clearButton.addEventListener("click", () => {
   input.focus();
 });
 copyButton.addEventListener("click", () => {
-  navigator.clipboard.writeText([output.textContent, outputList.innerText].filter(Boolean).join("\n"));
+  navigator.clipboard.writeText(outputList.innerText.trim());
 });
 new MutationObserver(() => {
   output.classList.toggle("empty", output.textContent === "La transcripción aparecerá aquí.");
