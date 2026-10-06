@@ -5,9 +5,10 @@ const outputList = document.getElementById('outputList');
 const notesToggle = document.getElementById('notesToggle');
 const tooltip = document.getElementById('wordTooltip');
 const API_BASE_URL = `${window.location.origin}/phonetic-transcriber/proxy`;
+const isTouchscreen = navigator.maxTouchPoints > 0 || 'ontouchstart' in window;
 
 phraseEl.addEventListener('keydown', (event) => {
-  if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) {
+  if (!isTouchscreen && event.key === 'Enter' && !event.shiftKey && !event.isComposing) {
     event.preventDefault();
     form.requestSubmit();
   }

@@ -3,19 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Transcribe palabras y frases del inglés a una aproximación de como sonaría leído en español y una trasncripción al Alfabeto Fonético Internacional (IPA) con una explicación de cómo leerlo.">
+<meta name="description" content="Pronuncia palabras y frases en inglés con la transcripción aproximada de como sonaría leído en español y una transcripción al Alfabeto Fonético Internacional (IPA) con una explicación de cómo leerlo.">
 <meta name="robots" content="index, follow">
 <meta name="theme-color" content="#f8fafd">
 <link rel="canonical" href="https://pronunciareningles.com/">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="es_ES">
 <meta property="og:url" content="https://pronunciareningles.com/">
-<meta property="og:title" content="Transcriptor fonético online | IPA">
-<meta property="og:description" content="Transcribe palabras y frases del inglés a una aproximación de como sonaría leído en español y una trasncripción al Alfabeto Fonético Internacional (IPA) con una explicación de cómo leerlo.">
+<meta property="og:title" content="Pronunciar en inglés | Transcriptor fonético online | IPA">
+<meta property="og:description" content="Pronuncia palabras y frases en inglés con la transcripción aproximada de como sonaría leído en español y una transcripción al Alfabeto Fonético Internacional (IPA) con una explicación de cómo leerlo.">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Transcriptor fonético online | IPA">
-<meta name="twitter:description" content="Transcribe palabras y frases del inglés a una aproximación de como sonaría leído en español y una trasncripción al Alfabeto Fonético Internacional (IPA) con una explicación de cómo leerlo.">
-<title>Transcriptor fonético online | IPA</title>
+<meta name="twitter:title" content="Pronunciar en inglés | Transcriptor fonético online | IPA">
+<meta name="twitter:description" content="Pronuncia palabras y frases en inglés con la transcripción aproximada de como sonaría leído en español y una transcripción al Alfabeto Fonético Internacional (IPA) con una explicación de cómo leerlo.">
+<title>Pronunciar en inglés | Transcriptor fonético online</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&family=Noto+Sans:wght@400;500&display=swap" rel="stylesheet">
@@ -52,8 +52,7 @@ body {
 /* Cabecera */
 .top { display: flex; align-items: center; gap: 12px; padding: 16px 24px; }
 .logo {
-  width: 36px; height: 36px; border-radius: 10px; background: var(--accent-soft); color: var(--accent-ink);
-  display: grid; place-items: center; font-family: var(--ipa); font-size: 20px; font-weight: 500;
+  width: 36px; height: 36px; object-fit: contain; flex: 0 0 auto;
 }
 .top h1 { margin: 0; font-size: 1.25rem; font-weight: 500; letter-spacing: -.01em; }
 
@@ -152,6 +151,16 @@ main { max-width: 1040px; margin: 0 auto; padding: 8px 16px 48px; }
   border-radius: 16px; color: var(--muted);
 }
 .notes[hidden] { display: none; }
+.site-footer {
+  max-width: 1040px; margin: 0 auto; padding: 24px 24px 32px;
+  border-top: 1px solid var(--line); color: var(--muted);
+  display: grid; gap: 20px;
+}
+.footer-section h2 { margin: 0 0 4px; color: var(--text); font-size: 1rem; font-weight: 600; }
+.footer-section p { margin: 0; }
+.footer-links { display: flex; flex-wrap: wrap; gap: 16px; }
+.footer-links a { color: var(--accent); text-decoration: none; }
+.footer-links a:hover { text-decoration: underline; }
 
 /* Móvil: los paneles se apilan, como en Google Translate */
 @media (max-width: 720px) {
@@ -160,13 +169,16 @@ main { max-width: 1040px; margin: 0 auto; padding: 8px 16px 48px; }
   .panel + .panel { border-left: 0; border-top: 1px solid var(--line); }
   .panel textarea, .out { font-size: 1.25rem; }
 }
+@media (max-width: 560px) {
+  .site-footer { padding-inline: 16px; }
+}
 @media (prefers-reduced-motion: reduce) { .track, .track::after { transition: none; } }
 </style>
 </head>
 <body>
 <header class="top">
-  <div class="logo" aria-hidden="true">ʃ</div>
-  <h1>Transcriptor Fonético</h1>
+  <img class="logo" src="favicon-194x194.png" alt="">
+  <h1>Pronunciar en inglés | Transcriptor Fonético</h1>
 </header>
 
 <main>
@@ -233,6 +245,21 @@ main { max-width: 1040px; margin: 0 auto; padding: 8px 16px 48px; }
     </article>
   </section>
 </main>
+
+<footer class="site-footer">
+  <section class="footer-section" aria-labelledby="contact-heading">
+    <h2 id="contact-heading">Comentarios y oportunidades</h2>
+    <p>¿Tienes algún comentario o propuesta? Me encantará leerte.</p>
+    <nav class="footer-links" aria-label="Contacto">
+      <a href="mailto:jmartinfe@gmail.com">jmartinfe@gmail.com</a>
+      <a href="https://www.linkedin.com/in/jmartinfe/">Conecta conmigo en LinkedIn</a>
+    </nav>
+  </section>
+  <section class="footer-section" aria-labelledby="support-heading">
+    <h2 id="support-heading">Apoyo</h2>
+    <p>Esto es un proyecto personal y no necesito donaciones para mantenerlo, pero si quieres invitarme a un <a href="https://ko-fi.com/jmartinfe">café</a>, es bienvenido.</p>
+    </section>
+</footer>
 
 <script src="js/app.js"></script>
 <script>
