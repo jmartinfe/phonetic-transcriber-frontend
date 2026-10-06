@@ -1,0 +1,20 @@
+{
+  "id": "/",
+  "name": "Pronunciar en inglés | Transcriptor Fonético",
+  "short_name": "Pronunciar en inglés",
+  "description": "Transcribe palabras y frases en inglés con una guía fonética aproximada y en IPA.",
+  "lang": "es",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f8fafd",
+  "theme_color": "#f8fafd",
+  "icons": [
+    {
+      "src": "/favicon-194x194.png",
+      "sizes": "194x194",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
