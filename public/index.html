@@ -129,13 +129,14 @@ main { max-width: 1040px; margin: 0 auto; padding: 8px 16px 48px; }
 }
 .icon-btn:hover { background: color-mix(in srgb, var(--muted) 14%, transparent); }
 .icon-btn svg { width: 22px; height: 22px; fill: currentColor; }
+.icon-btn[aria-pressed="true"] { color: var(--accent); background: var(--accent-soft); }
 .btn:focus-visible, .icon-btn:focus-visible, .switch input:focus-visible + .track, textarea:focus-visible {
   outline: 2px solid var(--accent); outline-offset: 2px;
 }
 .panel textarea:focus-visible { outline: none; }
 
 /* Interruptor de notas */
-.options { display: flex; align-items: center; gap: 12px; padding: 20px 8px 0; color: var(--muted); }
+.options { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; padding: 20px 8px 0; color: var(--muted); }
 .switch { position: relative; display: inline-flex; cursor: pointer; }
 .switch input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
 .track { width: 40px; height: 24px; border-radius: 12px; background: var(--line); transition: background .15s; position: relative; }
@@ -145,6 +146,8 @@ main { max-width: 1040px; margin: 0 auto; padding: 8px 16px 48px; }
 }
 .switch input:checked + .track { background: var(--accent); }
 .switch input:checked + .track::after { transform: translateX(16px); }
+.speech-speed { align-items: center; gap: 8px; font-size: .9375rem; }
+.speech-status { color: var(--muted); font-size: .8125rem; }
 
 .notes {
   margin: 16px 0 0; padding: 20px 24px; background: var(--surface); border: 1px solid var(--line);
@@ -189,9 +192,14 @@ main { max-width: 1040px; margin: 0 auto; padding: 8px 16px 48px; }
     <div class="panel output-panel">
       <div class="panel-head">
         <span class="chip">Texto</span>
-        <button class="icon-btn" id="clear" type="button" aria-label="Borrar texto" hidden>
-          <svg viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-        </button>
+        <div>
+          <button class="icon-btn" id="speak" type="button" aria-label="Escuchar texto" aria-pressed="false" title="Escuchar texto">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 4V5L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4.03v8.05A4.5 4.5 0 0 0 16.5 12zm-2.5-9.77v2.06a8 8 0 0 1 0 15.42v2.06a10 10 0 0 0 0-19.54z"/></svg>
+          </button>
+          <button class="icon-btn" id="clear" type="button" aria-label="Borrar texto" hidden>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+          </button>
+        </div>
       </div>
       <textarea id="phrase" maxlength="2000" placeholder="Introduce una palabra o frase" aria-label="Texto a transcribir"></textarea>
       <div class="panel-foot">
@@ -216,6 +224,13 @@ main { max-width: 1040px; margin: 0 auto; padding: 8px 16px 48px; }
 
   <div class="options">
     <button class="notes-toggle" id="notesToggle" type="button">Mostrar notas</button>
+    <span>Velocidad reproducción</span>
+    <label class="switch speech-speed">
+      <input id="slowSpeech" type="checkbox">
+      <span class="track" aria-hidden="true"></span>
+      <span>Lento (0.6×)</span>
+    </label>
+    <span class="speech-status" id="speechStatus" aria-live="polite"></span>
   </div>
   <div class="tooltip" id="wordTooltip" aria-hidden="true"></div>
 
@@ -267,9 +282,71 @@ const input = document.getElementById("phrase");
 const output = document.getElementById("output");
 const clearButton = document.getElementById("clear");
 const copyButton = document.getElementById("copy");
+const speakButton = document.getElementById("speak");
+const slowSpeech = document.getElementById("slowSpeech");
+const speechStatus = document.getElementById("speechStatus");
+let activeUtterance = null;
+
+function resetSpeechButton() {
+  speakButton.setAttribute("aria-pressed", "false");
+  speakButton.setAttribute("aria-label", "Escuchar texto");
+  speakButton.title = "Escuchar texto";
+}
+
+function stopSpeech(message) {
+  if (!activeUtterance) return;
+  window.speechSynthesis.cancel();
+  activeUtterance = null;
+  resetSpeechButton();
+  if (message) speechStatus.textContent = message;
+}
+
 input.addEventListener("input", () => {
   document.getElementById("n").textContent = input.value.length;
   clearButton.hidden = !input.value;
+  stopSpeech("Lectura detenida porque cambió el texto.");
+});
+speakButton.addEventListener("click", () => {
+  if (!("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)) {
+    speechStatus.textContent = "Tu navegador no admite la lectura en voz alta.";
+    return;
+  }
+  if (activeUtterance) {
+    stopSpeech("Lectura detenida.");
+    return;
+  }
+  const text = input.value.trim();
+  if (!text) {
+    speechStatus.textContent = "Introduce texto para poder escucharlo.";
+    input.focus();
+    return;
+  }
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "en-US";
+  utterance.rate = slowSpeech.checked ? 0.6 : 0.9;
+  utterance.onend = () => {
+    if (activeUtterance !== utterance) return;
+    activeUtterance = null;
+    resetSpeechButton();
+    speechStatus.textContent = "Lectura finalizada.";
+  };
+  utterance.onerror = (event) => {
+    if (activeUtterance !== utterance) return;
+    activeUtterance = null;
+    resetSpeechButton();
+    speechStatus.textContent = `No se pudo reproducir el texto: ${event.error}.`;
+  };
+
+  window.speechSynthesis.cancel();
+  activeUtterance = utterance;
+  speakButton.setAttribute("aria-pressed", "true");
+  speakButton.setAttribute("aria-label", "Detener lectura");
+  speakButton.title = "Detener lectura";
+  speechStatus.textContent = slowSpeech.checked
+    ? "Reproduciendo texto de entrada lentamente."
+    : "Reproduciendo texto de entrada.";
+  window.speechSynthesis.speak(utterance);
 });
 clearButton.addEventListener("click", () => {
   input.value = "";
