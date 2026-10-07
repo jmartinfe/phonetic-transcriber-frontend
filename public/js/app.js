@@ -119,6 +119,7 @@ function formatListItem(token) {
     return `
       <li class="result-item">
         ${titleHtml}
+        <div class="result-status not-found" role="status">Palabra no encontrada.</div>
         ${displayHtml}
         ${alternativesHtml}
         ${notesHtml}
@@ -358,3 +359,93 @@ form.addEventListener('submit', async (event) => {
     outputList.innerHTML = '';
   }
 });
+
+const input = document.getElementById('phrase');
+const output = document.getElementById('output');
+const clearButton = document.getElementById('clear');
+const copyButton = document.getElementById('copy');
+const speakButton = document.getElementById('speak');
+const slowSpeech = document.getElementById('slowSpeech');
+const speechStatus = document.getElementById('speechStatus');
+let activeUtterance = null;
+
+function resetSpeechButton() {
+  speakButton.setAttribute('aria-pressed', 'false');
+  speakButton.setAttribute('aria-label', 'Escuchar texto');
+  speakButton.title = 'Escuchar texto';
+}
+
+function stopSpeech(message) {
+  if (!activeUtterance) return;
+  window.speechSynthesis.cancel();
+  activeUtterance = null;
+  resetSpeechButton();
+  if (message) speechStatus.textContent = message;
+}
+
+input.addEventListener('input', () => {
+  document.getElementById('n').textContent = input.value.length;
+  clearButton.hidden = !input.value;
+  stopSpeech('Lectura detenida porque cambió el texto.');
+});
+
+speakButton.addEventListener('click', () => {
+  if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) {
+    speechStatus.textContent = 'Tu navegador no admite la lectura en voz alta.';
+    return;
+  }
+  if (activeUtterance) {
+    stopSpeech('Lectura detenida.');
+    return;
+  }
+  const text = input.value.trim();
+  if (!text) {
+    speechStatus.textContent = 'Introduce texto para poder escucharlo.';
+    input.focus();
+    return;
+  }
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'en-US';
+  utterance.rate = slowSpeech.checked ? 0.6 : 0.9;
+  utterance.onend = () => {
+    if (activeUtterance !== utterance) return;
+    activeUtterance = null;
+    resetSpeechButton();
+    speechStatus.textContent = 'Lectura finalizada.';
+  };
+  utterance.onerror = (event) => {
+    if (activeUtterance !== utterance) return;
+    activeUtterance = null;
+    resetSpeechButton();
+    speechStatus.textContent = `No se pudo reproducir el texto: ${event.error}.`;
+  };
+
+  window.speechSynthesis.cancel();
+  activeUtterance = utterance;
+  speakButton.setAttribute('aria-pressed', 'true');
+  speakButton.setAttribute('aria-label', 'Detener lectura');
+  speakButton.title = 'Detener lectura';
+  speechStatus.textContent = slowSpeech.checked
+    ? 'Reproduciendo texto de entrada lentamente.'
+    : 'Reproduciendo texto de entrada.';
+  window.speechSynthesis.speak(utterance);
+});
+
+clearButton.addEventListener('click', () => {
+  input.value = '';
+  input.dispatchEvent(new Event('input'));
+  output.textContent = 'La transcripción aparecerá aquí.';
+  output.classList.add('empty');
+  outputList.innerHTML = '';
+  input.focus();
+});
+
+copyButton.addEventListener('click', () => {
+  navigator.clipboard.writeText(outputList.innerText.trim());
+});
+
+new MutationObserver(() => {
+  output.classList.toggle('empty', output.textContent === 'La transcripción aparecerá aquí.');
+  copyButton.hidden = !outputList.childElementCount;
+}).observe(outputList, { childList: true });
